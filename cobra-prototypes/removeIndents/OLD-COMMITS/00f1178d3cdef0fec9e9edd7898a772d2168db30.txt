@@ -1,0 +1,78 @@
+/*
+    * Prototype of auto-indent removal for 0B.6.
+    * SAMPLE3.txt is a temporary sample.
+*/
+
+#include <iostream>
+#include <fstream>
+
+#include <string>
+
+const char COLON = ':';
+
+bool runTest = true;
+
+int numberOfSamplesToTest = 2;
+
+int main()
+{
+    if (runTest)
+    {
+        for (int sampleNumber = 1; sampleNumber <= numberOfSamplesToTest; sampleNumber++)
+        {
+            std::cout << "SAMPLE " << std::to_string(sampleNumber) << "\n";
+
+            std::string samplePath = "sample\\SAMPLE" + std::to_string(sampleNumber) + ".txt";
+            std::string outputPath = "output\\OUTPUT" + std::to_string(sampleNumber) + ".txt";
+    
+            std::ifstream fileToRemoveIndents(samplePath);
+            std::ofstream resultOfIndentRemoval(outputPath);
+
+            bool removingIndents = false;
+
+            std::string textToRemoveIndents;
+
+            if (!fileToRemoveIndents || !resultOfIndentRemoval)
+            {
+                std::cerr << "FAILED TO OPEN FILES.";
+            }
+
+            while (std::getline(fileToRemoveIndents, textToRemoveIndents))
+            {
+                // ? TEST 12                                ::::::
+                bool containsTab = textToRemoveIndents.find("    ") != std::string::npos;
+
+                // ? TEST 13
+                // std::cout << containsTab << "\n";
+
+                if (removingIndents && containsTab)
+                {
+                    textToRemoveIndents.replace(0, 4, "");
+                    textToRemoveIndents = textToRemoveIndents + "\n";
+                }
+
+                bool isColonLine = textToRemoveIndents.back() == COLON;
+
+                // ? TEST 14
+                // std::cout << isColonLine << "\n";
+
+                if (isColonLine && !removingIndents)
+                {
+                    removingIndents = true;
+                    textToRemoveIndents = "";
+                }
+                else if (!isColonLine && !containsTab && removingIndents)  // ? TEST 15
+                {
+                    removingIndents = false;
+                }
+
+                resultOfIndentRemoval << textToRemoveIndents;
+            }
+
+            fileToRemoveIndents.close();
+            resultOfIndentRemoval.close();
+        }
+    }
+
+    return 0;
+}

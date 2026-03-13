@@ -1,0 +1,51 @@
+/*
+    * Prototype of auto-indent removal for 0B.6.
+*/
+
+#include <iostream>
+#include <fstream>
+
+#include <regex>
+
+#include <string>
+
+int main()
+{
+    std::ifstream fileToRemoveIndents("sample\\SAMPLE1.txt");
+    std::ofstream resultOfIndentRemoval("noIndent.txt");
+
+    std::string textToRemoveIndents;
+
+    const char COLON = ':';
+
+    bool removingIndents = false;
+
+    if (!fileToRemoveIndents || !resultOfIndentRemoval)
+    {
+        std::cerr << "FAILED TO OPEN FILES.";
+        return 1;
+    }
+
+    while (std::getline(fileToRemoveIndents, textToRemoveIndents))
+    {
+        if (removingIndents && textToRemoveIndents[0] == ' ')
+        {
+            textToRemoveIndents.replace(0, 4, "");
+            textToRemoveIndents = textToRemoveIndents + "\n";
+        }
+        else if (removingIndents && textToRemoveIndents[0] != ' ')
+        {
+            removingIndents = false;
+        }
+
+        if (textToRemoveIndents.back() == COLON)
+        {
+            removingIndents = true;
+            textToRemoveIndents = "";
+        }
+
+        resultOfIndentRemoval << textToRemoveIndents;
+    }
+
+    return 0;
+}

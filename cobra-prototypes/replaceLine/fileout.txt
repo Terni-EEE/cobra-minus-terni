@@ -1,0 +1,10 @@
+editor.theme:
+Cobra
+-
+Light
+Theme
+editor.fontFace:
+Segoe
+UI
+editor.fontSize:
+14
