@@ -1,6 +1,7 @@
 /*
     * Prototype of auto-indent removal for 0B.6.
     * SAMPLE3.txt is no longer a temporary sample.
+    * Code for IDEFrame::ScanText().
 */
 
 #include <iostream>

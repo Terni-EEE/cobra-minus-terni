@@ -1043,9 +1043,66 @@ void IDEFrame::addCodeBodyToIDE(const wxString& p_primaryKeywords, const wxStrin
     codeBody->Bind(wxEVT_TEXT, &IDEFrame::ScanText, this);
 }
 
-void IDEFrame::ScanText(wxStyledTextEvent& styledTextEvent)
+std::vector<std::string> splitStringGivenDelimeter(const std::string& stringToSplit, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::istringstream iss(stringToSplit);
+    std::string token;
+
+    while (std::getline(iss, token, delimiter)) 
+    {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
+// Use DeleteRange() for indentation removal.
+void IDEFrame::ScanText(wxCommandEvent& styledTextEvent)
 {
     wxString textToScanForIndents = codeBody->GetText();
+    std::string textToRead = textToScanForIndents.ToStdString();
+    
+    const char COLON = ':';
+
+    std::regex multipleIndentsPattern(R"( {4,})");
+
+    bool removingIndents = false;
+
+    std::vector<std::string> linesToRead = splitStringGivenDelimeter(textToScanForIndents.ToStdString(), '\n');
+
+    for (std::string lineToRead : linesToRead)
+    {
+        bool isEmpty = lineToRead.empty();
+
+        bool isColonLine =
+            !lineToRead.empty() &&
+            lineToRead.back() == COLON;
+
+        bool hasIndent =
+            lineToRead.rfind("    ", 0) == 0 ||
+            lineToRead.rfind("  ", 0) == 0;
+
+        bool hasMultipleIndents = std::regex_search(lineToRead, multipleIndentsPattern);
+
+        if (isColonLine && !hasMultipleIndents)
+        {
+            removingIndents = true;
+
+            // Wherever the end of the line is.
+            codeBody->LineDelete();
+        }
+        else if (removingIndents && hasIndent)
+        {
+            codeBody->Replace(0, 4, "");
+        }
+        else if (removingIndents && !hasIndent && !isEmpty)
+        {
+            removingIndents = false;
+        }
+
+        codeBody->LineDelete();
+    }
 }
 
 void IDEFrame::addProjectFileTreeToIDE()

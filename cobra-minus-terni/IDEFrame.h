@@ -120,7 +120,7 @@ class IDEFrame : public wxFrame
 		void populateProjectFileTreeWithFiles(wxTreeCtrl* tree, wxTreeItemId parent, const wxString& path);
 
 		void OnCharAdded(wxStyledTextEvent& styledTextEvent);
-		void ScanText(wxStyledTextEvent& styledTextEvent);
+		void ScanText(wxCommandEvent& styledTextEvent);
 		
 		wxDECLARE_EVENT_TABLE();
 };
