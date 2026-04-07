@@ -1009,7 +1009,7 @@ std::vector<std::string> IDEFrame::extractSymbols(const std::string& code)
 
 void IDEFrame::addCodeBodyToIDE(const wxString& p_primaryKeywords, const wxString& p_secondaryKeywords)
 {
-    codeBody = new wxStyledTextCtrl(idePanel, CODEBODY_IDE_ID, wxPoint(0, 0), wxSize(1080, 720));
+    codeBody = new wxStyledTextCtrl(this, CODEBODY_IDE_ID, wxPoint(0, 0), wxSize(1080, 720));
 
     codeBody->SetLexer(wxSTC_LEX_PYTHON);
 
