@@ -1009,7 +1009,7 @@ std::vector<std::string> IDEFrame::extractSymbols(const std::string& code)
 
 void IDEFrame::addCodeBodyToIDE(const wxString& p_primaryKeywords, const wxString& p_secondaryKeywords)
 {
-    codeBody = new wxStyledTextCtrl(this, CODEBODY_IDE_ID, wxPoint(0, 0), wxSize(1080, 720));
+    codeBody = new wxStyledTextCtrl(idePanel, CODEBODY_IDE_ID, wxPoint(0, 0), wxSize(1080, 720));
 
     codeBody->SetLexer(wxSTC_LEX_PYTHON);
 
@@ -1119,7 +1119,7 @@ void IDEFrame::ScanText(wxCommandEvent& styledTextEvent)
 
 void IDEFrame::addProjectFileTreeToIDE()
 {
-    projectFileTree = new wxTreeCtrl(this, FILE_TREE_IDE_ID, wxDefaultPosition, wxSize(300, 400),
+    projectFileTree = new wxTreeCtrl(idePanel, FILE_TREE_IDE_ID, wxDefaultPosition, wxSize(300, 400),
         wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT);
 
     std::string str = projectPath.ToStdString();
@@ -1241,11 +1241,14 @@ IDEFrame::IDEFrame(const wxString& title, wxString p_projectPath)
     //SetSizerAndFit(boxLayout);
 
     // TEST 2
-    SetSizer(boxLayout);
+    idePanel->SetSizer(boxLayout);
 
-    CreateStatusBar();
+    wxBoxSizer* frameSizer = new wxBoxSizer(wxVERTICAL);
+    frameSizer->Add(idePanel, 1, wxEXPAND);
 
     this->Maximize();
+
+    SetSizer(frameSizer);
 
     createDotCobraDirectory();
 }
