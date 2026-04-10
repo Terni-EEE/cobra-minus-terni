@@ -23,3 +23,5 @@ Beta v0B.3 - 4/29/2025 - Can open projects, and IDE autocompletion for keywords.
 Beta v0B.4 - 5/25/2025 - Added Settings menu to customize editor.
 
 Beta v0B.5 - 6/19/2025 - Added Find and Replace menu, along with capitalizing text using Shift + Caps Lock.
+
+Beta v0B.5.1 - 4/8/2026 - Added a feedback prompt.

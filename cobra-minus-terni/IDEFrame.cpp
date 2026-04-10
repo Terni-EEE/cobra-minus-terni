@@ -1235,12 +1235,6 @@ IDEFrame::IDEFrame(const wxString& title, wxString p_projectPath)
     boxLayout->Add(codeBody, 2, wxEXPAND | wxALL, 5);
     boxLayout->Add(projectFileTree, 1, wxEXPAND | wxALL, 5);
 
-    // DEBUGGING FORUM: https://forums.wxwidgets.org/viewtopic.php?t=50527
-    
-    // TEST 1
-    //SetSizerAndFit(boxLayout);
-
-    // TEST 2
     idePanel->SetSizer(boxLayout);
 
     wxBoxSizer* frameSizer = new wxBoxSizer(wxVERTICAL);
