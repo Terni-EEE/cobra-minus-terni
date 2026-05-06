@@ -35,7 +35,7 @@ class IDEFrame : public wxFrame
 
 		wxTreeCtrl* projectFileTree;
 
-		wxString editorFontFace = "Anonymous Pro";
+		wxString editorFontFace = "Consolas";
 		int editorFontSize = 13;
 
 		void confirmExit(wxCloseEvent& event);
@@ -121,7 +121,7 @@ class IDEFrame : public wxFrame
 		void populateProjectFileTreeWithFiles(wxTreeCtrl* tree, wxTreeItemId parent, const wxString& path);
 
 		void OnCharAdded(wxStyledTextEvent& styledTextEvent);
-		void ScanText(wxCommandEvent& styledTextEvent);
+		void ScanText(wxStyledTextEvent& styledTextEvent);
 		
 		wxDECLARE_EVENT_TABLE();
 };

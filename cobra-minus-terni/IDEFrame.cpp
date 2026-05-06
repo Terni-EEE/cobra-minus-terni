@@ -77,8 +77,6 @@ wxBEGIN_EVENT_TABLE(IDEFrame, wxFrame)
 
     EVT_MENU(RUN_CODE_MENUITEM_ID, IDEFrame::runPythonCode)
 
-    //EVT_TEXT(CODEBODY_IDE_ID, IDEFrame::ScanText)
-
     EVT_TREE_ITEM_ACTIVATED(FILE_TREE_IDE_ID, IDEFrame::onFileTreeItemSelected)
 wxEND_EVENT_TABLE();
 
@@ -1071,50 +1069,65 @@ std::vector<std::string> splitStringGivenDelimeter(const std::string& stringToSp
     return tokens;
 }
 
-// Use DeleteRange() for indentation removal.
-void IDEFrame::ScanText(wxCommandEvent& styledTextEvent)
+void IDEFrame::ScanText(wxStyledTextEvent& styledTextEvent)
 {
-    wxString textToScanForIndents = codeBody->GetText();
-    std::string textToRead = textToScanForIndents.ToStdString();
-    
+    int modType = styledTextEvent.GetModificationType();
+
     const char COLON = ':';
 
-    std::regex multipleIndentsPattern(R"( {4,})");
-
-    bool removingIndents = false;
-
-    std::vector<std::string> linesToRead = splitStringGivenDelimeter(textToScanForIndents.ToStdString(), '\n');
-
-    for (std::string lineToRead : linesToRead)
+    // Check if text was deleted
+    if (modType & wxSTC_MOD_DELETETEXT)
     {
-        bool isEmpty = lineToRead.empty();
+        int position = styledTextEvent.GetPosition();
+        int length = styledTextEvent.GetLength();
 
-        bool isColonLine =
-            !lineToRead.empty() &&
-            lineToRead.back() == COLON;
+        wxString deletedText = styledTextEvent.GetText();
 
-        bool hasIndent =
-            lineToRead.rfind("    ", 0) == 0 ||
-            lineToRead.rfind("  ", 0) == 0;
-
-        bool hasMultipleIndents = std::regex_search(lineToRead, multipleIndentsPattern);
-
-        if (isColonLine && !hasMultipleIndents)
+        if (deletedText == COLON) 
         {
-            removingIndents = true;
+            wxString textToScanForIndents = codeBody->GetText();
+            std::string textToRead = textToScanForIndents.ToStdString();
 
-            // Wherever the end of the line is.
-            codeBody->LineDelete();
-        }
-        else if (removingIndents && hasIndent)
-        {
-            codeBody->DeleteRange(0, 4);  // ? TEST 4
-        }
-        else if (removingIndents && !hasIndent && !isEmpty)
-        {
-            removingIndents = false;
+            std::regex multipleIndentsPattern(R"( {4,})");
+
+            bool removingIndents = false;
+
+            std::vector<std::string> linesToRead = splitStringGivenDelimeter(textToScanForIndents.ToStdString(), '\n');
+
+            for (std::string lineToRead : linesToRead)
+            {
+                bool isEmpty = lineToRead.empty();
+
+                bool isColonLine =
+                    !lineToRead.empty() &&
+                    lineToRead.back() == COLON;
+
+                bool hasIndent =
+                    lineToRead.rfind("    ", 0) == 0 ||
+                    lineToRead.rfind("  ", 0) == 0;
+
+                bool hasMultipleIndents = std::regex_search(lineToRead, multipleIndentsPattern);
+
+                if (isColonLine && !hasMultipleIndents)
+                {
+                    removingIndents = true;
+
+                    // Wherever the end of the line is.
+                    codeBody->LineDelete();
+                }
+                else if (removingIndents && hasIndent)
+                {
+                    codeBody->DeleteRange(0, 4);
+                }
+                else if (removingIndents && !hasIndent && !isEmpty)
+                {
+                    removingIndents = false;
+                }
+            }
         }
     }
+
+    styledTextEvent.Skip();
 }
 
 void IDEFrame::addProjectFileTreeToIDE()
@@ -1200,6 +1213,8 @@ IDEFrame::IDEFrame(const wxString& title, wxString p_projectPath)
     : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(1080, 720))
 {
     Bind(wxEVT_CLOSE_WINDOW, &IDEFrame::confirmExit, this);
+
+    Bind(wxEVT_STC_MODIFIED, &IDEFrame::ScanText, this);
 
     const wxString& primaryKeywords = "and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield";
     const wxString& secondaryKeywords = "True False None abs all any ascii bin bool breakpoint"

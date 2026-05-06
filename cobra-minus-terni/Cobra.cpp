@@ -13,7 +13,7 @@ bool Cobra::OnInit()
 {
 	wxInitAllImageHandlers();
 
-	const wxString &MAIN_MENU_TITLE = "Cobra 0B.5.1";
+	const wxString &MAIN_MENU_TITLE = "Cobra 0B.5.2";
 
 	const int MAIN_MENU_WIDTH = 1080;
 	const int MAIN_MENU_HEIGHT = 720;
